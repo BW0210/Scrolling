@@ -56,7 +56,7 @@ class InfiniteImageListAdapter(
                     view.post {
                         setMarginToStart(
                             view,
-                            if (position == 1 && !initMarginFlag) {
+                            if (position == 1 /*&& !initMarginFlag*/) {
                                 initMarginFlag = true
                                 view.width / 2
                             } else 0
@@ -70,6 +70,9 @@ class InfiniteImageListAdapter(
 
     }
 
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
 
     private fun setMarginToStart(view: View, marginRight: Int) {
         val layoutParams = view.layoutParams as StaggeredGridLayoutManager.LayoutParams

@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import timber.log.Timber
 
 abstract class PaginationScrollListener constructor() :
     RecyclerView.OnScrollListener() {
@@ -52,10 +53,19 @@ abstract class PaginationScrollListener constructor() :
             }
         }
         if (!isLoading && !isLastPage) {
-            if (visibleItemCount + firstVisibleItemPosition >= totalItemCount
+            /*if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
                 && firstVisibleItemPosition >= 0
+                && totalItemCount >= 7
             ) {
                 Log.i(TAG, "Loading more items")
+                loadMoreItems()
+            }*/
+            Timber.tag("MG").e("IFSTATE -> ${visibleItemCount + firstVisibleItemPosition >= totalItemCount && firstVisibleItemPosition >= 0}")
+            Timber.tag("MG").e("visibleItemCount($visibleItemCount) + firstVisibleItemPosition($firstVisibleItemPosition) >=(${visibleItemCount + firstVisibleItemPosition >= totalItemCount}) totalItemCount($totalItemCount) && firstVisibleItemPosition($firstVisibleItemPosition) >=(${firstVisibleItemPosition >= 0 }) 0 && totalItemCount($totalItemCount) >=(${totalItemCount >= 15}) 15")
+
+            if (visibleItemCount + firstVisibleItemPosition >= totalItemCount && firstVisibleItemPosition >= 0/* && totalItemCount >= 15*/) {
+                Timber.tag("MG").e("Load More Data *****************************************************")
+
                 loadMoreItems()
             }
         }

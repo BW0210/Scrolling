@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
-class MainActivity : AppCompatActivity(), PagingImageListAdapter.PagingImageListInterface{
+class MainActivity : AppCompatActivity(), PagingImageListAdapter.PagingImageListInterface {
 
 
     private val imageViewModel by viewModel<ImageViewModel>()
@@ -42,15 +42,17 @@ class MainActivity : AppCompatActivity(), PagingImageListAdapter.PagingImageList
         imageViewModel.getImageListApiOrDB(pageNumber)
     }
 
-    fun setImageListsObservers(){
-        observe(imageViewModel.infinitieImageListLiveData){
-           if (!it.isNullOrEmpty()){
-               setInitAndShowInfiniteListOfImages(it)
-           }
+    fun setImageListsObservers() {
+        observe(imageViewModel.infinitieImageListLiveData) {
+            if (!it.isNullOrEmpty()) {
+                setInitAndShowInfiniteListOfImages(it)
+            }
         }
-        observe(imageViewModel.pagingImageListLiveData){
-            if (!it.isNullOrEmpty()){
+        observe(imageViewModel.pagingImageListLiveData) {
+            if (!it.isNullOrEmpty()) {
+                Timber.tag("MG").e("More Api Coming $pageNumber")
                 pagingListAdapter.addNewItems(it)
+                isLoadings = false
             }
         }
     }
@@ -70,7 +72,7 @@ class MainActivity : AppCompatActivity(), PagingImageListAdapter.PagingImageList
                     rec_infinite_scrolling,
                     object : ClickListener {
                         override fun onClick(view: View?, position: Int) {
-                            showAlerterPositionOfList(position + 1 )
+                            showAlerterPositionOfList(position + 1)
                         }
 
                         override fun onLongClick(view: View?, position: Int) {
@@ -80,18 +82,20 @@ class MainActivity : AppCompatActivity(), PagingImageListAdapter.PagingImageList
             )
         }
 
-        Handler(Looper.getMainLooper()).postDelayed({ rec_infinite_scrolling.startAutoScroll() }, 1000)
+        Handler(Looper.getMainLooper()).postDelayed(
+            { rec_infinite_scrolling.startAutoScroll() },
+            1000
+        )
 
 
     }
-
 
 
     private fun setInitAndShowPagingListOfImages() {
         if (!::pagingListAdapter.isInitialized) {
             pagingListAdapter = PagingImageListAdapter(this, arrayListOf())
         }
-        pagingLayoutManager =  StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.HORIZONTAL)
+        pagingLayoutManager = StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.HORIZONTAL)
         rec_paging_scrolling.apply {
             layoutManager = pagingLayoutManager
             adapter = pagingListAdapter
@@ -103,9 +107,12 @@ class MainActivity : AppCompatActivity(), PagingImageListAdapter.PagingImageList
         rec_paging_scrolling.addOnScrollListener(object :
             PaginationScrollListener(pagingLayoutManager) {
             override fun loadMoreItems() {
-                isLoadings = true
-                pageNumber++
-                imageViewModel.getImageListApiOrDB(pageNumber)
+                if (!isLoadings) {
+                    isLoadings = true
+                    pageNumber++
+                    imageViewModel.getImageListApiOrDB(pageNumber)
+                    Timber.tag("MG").e("$isLoadings More Api Call $pageNumber")
+                }
             }
 
             override val isLastPage: Boolean = isLastPages
@@ -115,7 +122,12 @@ class MainActivity : AppCompatActivity(), PagingImageListAdapter.PagingImageList
     }
 
     fun showAlerterPositionOfList(position: Int) {
-        Alerter("تبریک", "شما بر روی عکس شماره ${rec_infinite_scrolling.calculateCorrectPosition(position)} کلیک کرده اید" + " (ردیف ${rec_infinite_scrolling.calculateCorrectRowNumber(position)} آیتم ${rec_infinite_scrolling.calculateCorrectColumnNumber(position)})")
+        Alerter(
+            "تبریک",
+            "شما بر روی عکس شماره ${rec_infinite_scrolling.calculateCorrectPosition(position)} کلیک کرده اید" + " (ردیف ${
+                rec_infinite_scrolling.calculateCorrectRowNumber(position)
+            } آیتم ${rec_infinite_scrolling.calculateCorrectColumnNumber(position)})"
+        )
     }
 
     override fun onItemClick(position: Int) {

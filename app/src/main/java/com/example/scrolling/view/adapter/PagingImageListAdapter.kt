@@ -21,13 +21,14 @@ class PagingImageListAdapter(
     lateinit var mInterface : PagingImageListInterface
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-        return BaseViewHolder(
+        val view = BaseViewHolder(
             LayoutInflater.from(mContext).inflate(
                 R.layout.row_item_main_image_list,
                 parent,
                 false
             )
         )
+        return view
     }
 
     override fun getItemCount(): Int {
@@ -76,6 +77,10 @@ class PagingImageListAdapter(
             dataItem.add(it)
             notifyItemInserted(dataItem.size - 1)
         }
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return position
     }
 
     interface PagingImageListInterface{
